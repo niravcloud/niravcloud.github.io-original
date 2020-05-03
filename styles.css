@@ -1,0 +1,13 @@
+@import "nib"
+
+.centeredImage img {
+  display: block;
+  max-height: 100%;
+  width: 50%;
+  margin: 0 auto;
+}
+.text {
+  text-align: center;
+  color: #2a97d1;   
+  font: 12px "Roboto", serif;
+}
