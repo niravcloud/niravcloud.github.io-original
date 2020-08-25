@@ -10,11 +10,11 @@
 #                   GNU General Public License v3.0                     #
 #########################################################################
 ---
-- name: "Set DNS Record on CloudFlare"
+- name: "Setting CloudFlare DNS Record"
   include_role:
     name: cloudflare-dns
   vars:
-    subdomain: readarr
+    record: readarr
   when: cloudflare_enabled
 
 - name: Stop and remove any existing container
@@ -43,17 +43,17 @@
 - name: Create and start container
   docker_container:
     name: readarr
-    image: "hotio/readarr"
+    image: "hotio/readarr:unstable"
     pull: yes
     published_ports:
       - "127.0.0.1:8787:8787"
     env:
-      BACKUP: "no"
+      TZ: "{{ tz }}"
       PUID: "{{ uid }}"
       PGID: "{{ gid }}"
       UMASK: 002
       VIRTUAL_HOST: "readarr.{{ user.domain }}"
-      VIRTUAL_PORT: 7878
+      VIRTUAL_PORT: 8787
       LETSENCRYPT_HOST: "readarr.{{ user.domain }}"
       LETSENCRYPT_EMAIL: "{{ user.email }}"
       TZ: "{{ tz }}"
@@ -61,6 +61,8 @@
     devices: "{{ '/dev/dri:/dev/dri' if (gpu.intel and sickbeard_mp4_automator and dev_dri.stat.exists) | default(false) else omit }}"
     labels:
       "com.github.cloudbox.cloudbox_managed": "true"
+      "com.github.cloudbox.community": "readarr"
+
     networks:
       - name: cloudbox
         aliases:
